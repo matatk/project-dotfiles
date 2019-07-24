@@ -1,0 +1,22 @@
+{
+  "name": "project-dotfiles",
+  "version": "1.0.0",
+  "description": "Synchronise per-project dotfiles from a central place",
+  "license": "MIT",
+  "author": "Matthew Tylee Atkinson",
+  "scripts": {
+    "get-version": "echo $npm_package_version",
+    "test": "make test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
+  },
+  "devDependencies": {
+    "eclint": "~2.8",
+    "husky": "~3.0",
+    "jsonlint": "~1.6",
+    "standard-version": "~7.0"
+  }
+}

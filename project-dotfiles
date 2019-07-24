@@ -1,0 +1,150 @@
+#!/bin/bash
+PD_NAME="project-dotfiles"
+PD_VERSION_STAMP=".$PD_NAME-version"
+
+function pddir() {
+	if [ -L "$0" ]; then
+		SCRIPT=$(readlink "$0")
+	else
+		SCRIPT=$0
+	fi
+
+	dirname "$SCRIPT"
+}
+
+function pdwrap() {
+	call=$1
+	name=$2
+
+	check_local_stamp
+	echo
+
+	for central_dotfile_path in "$(pddir)"/.*; do
+		local_dotfile=$(basename "$central_dotfile_path")
+		if [ "$local_dotfile" == "." ] || [ "$local_dotfile" == ".." ] || [ "$local_dotfile" == ".git" ]; then
+			continue
+		fi
+
+		$call "$central_dotfile_path" "$local_dotfile"
+		echo
+
+	done
+	echo "$name done"
+
+	echo
+	ask_stamp
+}
+
+function pdinit() {
+	central_dotfile_path=$1
+	dotfile_name=$2
+
+	read -rp "how about $dotfile_name? " -n 1
+	echo
+	if [ "$REPLY" == 'y' ]; then
+		if [ -r "$dotfile_name" ]; then
+			read -rp "you already have $dotfile_name - overwrite it? " -n 1
+			echo
+			if [ "$REPLY" != 'y' ]; then
+				return
+			fi
+		fi
+		cp -v "$central_dotfile_path" .
+	else
+		echo "skipping $dotfile_name"
+	fi
+}
+
+function pdpatch() {
+	central_dotfile_path=$1
+	dotfile_name=$2
+
+	if [ -r "$dotfile_name" ]; then
+		echo "$dotfile_name"
+		if [ -z "$(git status --porcelain "$dotfile_name")" ]; then
+			git diff "$dotfile_name" "$central_dotfile_path" > /dev/null
+			if [ $? -eq 1 ]; then
+				read -rp "$dotfile_name has differences; would you like to investigate patching it? " -n 1
+				echo
+				if [ "$REPLY" == 'y' ]; then
+					diff -u "$dotfile_name" "$central_dotfile_path" > "$dotfile_name.patch"
+					patch < "$dotfile_name.patch"
+					rm "$dotfile_name.patch"
+					git add --patch "$dotfile_name"
+					echo "Removing unstaged hunks from $dotfile_name"
+					git checkout -- "$dotfile_name"
+				fi
+			else
+				echo '(no differences)'
+			fi
+		else
+			echo "$dotfile_name has uncommitted modifications -- skipping"
+		fi
+	else
+		echo "(skipping non-present local $dotfile_name)"
+	fi
+}
+
+function get_pd_version() {
+	cd "$(pddir)" || return
+	VERSION=$(npm run -s get-version)
+	cd - > /dev/null || return
+	echo "$VERSION"
+}
+
+function get_local_version() {
+	if [ -r $PD_VERSION_STAMP ]; then
+		tail -n 1 $PD_VERSION_STAMP
+	fi
+}
+
+function check_local_stamp() {
+	PD_VERSION=$(get_pd_version)
+	LOCAL_VERSION=$(get_local_version)
+
+	if [ "$LOCAL_VERSION" != "" ]; then
+		if [ "$LOCAL_VERSION" != "$PD_VERSION" ]; then
+			echo "local project is using $LOCAL_VERSION; latest is $PD_VERSION"
+		else
+			echo "local and latest $PD_NAME are both $LOCAL_VERSION"
+		fi
+	else
+		echo "no local version stamp; $PD_NAME is $PD_VERSION"
+	fi
+}
+
+function ask_stamp() {
+	read -rp "Would you like to make a stamp file with the version of the dotfiles used? " -n 1
+	echo
+	if [ "$REPLY" == 'y' ]; then
+		VERSION=$(get_pd_version)
+		echo "Stamping locally version $VERSION"
+		echo "# https://github.com/matatk/project-dotfiles" > $PD_VERSION_STAMP
+		echo "$VERSION" >> $PD_VERSION_STAMP
+	fi
+}
+
+function main() {
+	case "$1" in
+		'init')
+			pdwrap pdinit 'init'
+			;;
+		'patch')
+			pdwrap pdpatch 'patching'
+			;;
+		*)
+			echo per-project dotfile synchronisation tool
+			echo
+			echo "Make updates to your standard project dotfiles in the central repo."
+			echo "You can then use this script to keep projects' copies up-to-date."
+			echo
+			echo "Usage: $(basename "$0") <command>"
+			echo
+			echo Commands:
+			echo "    init     Choose which dotfiles your project needs and copy them in."
+			echo "    patch    Update your project's dotfiles with changes from the central set"
+			echo "             (uses 'git add --patch' for nice interactivity)."
+	esac
+}
+
+main "$1"
