@@ -8,6 +8,7 @@
   "parserOptions": {
     "ecmaVersion": 2019
   },
+  "reportUnusedDisableDirectives": true,
   "root": true,
   "rules": {
     "block-scoped-var": "error",
