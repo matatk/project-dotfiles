@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Synchronise per-project dotfiles from a central place",
   "license": "MIT",
+  "private": true,
   "author": "Matthew Tylee Atkinson",
   "scripts": {
     "get-version": "echo $npm_package_version",
