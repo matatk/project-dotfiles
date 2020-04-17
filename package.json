@@ -15,9 +15,9 @@
     }
   },
   "devDependencies": {
-    "eclint": "~2.8",
-    "husky": "~3.0",
-    "json-sort-cli": "~1.14",
-    "standard-version": "~7.0"
+    "eclint": "^2.8.1",
+    "husky": "^4.2.5",
+    "json-sort-cli": "^1.15.22",
+    "standard-version": "^8.0.0"
   }
 }

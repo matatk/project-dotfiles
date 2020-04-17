@@ -12,7 +12,7 @@ test:
 	@echo " * Running the tests does actually update the contents of the JSON files if"
 	@echo "   they need sorting. For this reason, 'git add .' is run before committing."
 	@echo
-	npx jsonsort '**/*.json'  # pass glob as string so we get the dotfiles too
+	npx jsonsort '*.json'  # pass glob as string so we get the dotfiles
 	npx eclint check .
 	npx shellcheck --check-sourced project-dotfiles
 
