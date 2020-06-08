@@ -16,7 +16,7 @@ test:
 	npx eclint check .
 	npx shellcheck --check-sourced project-dotfiles
 
-install: test
+install: test clean
 	ln -s $(CURDIR)/project-dotfiles ~/bin/
 
 clean:
