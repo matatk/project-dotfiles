@@ -1,23 +1,22 @@
 {
   "name": "project-dotfiles",
   "version": "1.1.0",
+  "private": true,
   "description": "Synchronise per-project dotfiles from a central place",
   "license": "MIT",
-  "private": true,
   "author": "Matthew Tylee Atkinson",
   "scripts": {
     "get-version": "echo $npm_package_version",
-    "test": "make test"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm test && git add ."
-    }
+    "test": "make test",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "eclint": "^2.8.1",
-    "husky": "^4.2.5",
-    "json-sort-cli": "^1.15.22",
-    "standard-version": "^8.0.0"
+    "@release-it/conventional-changelog": "^5.1.1",
+    "husky": "^8.0.0",
+    "json-sort-cli": "^2.1.1",
+    "release-it": "^15.5.0"
+  },
+  "overrides": {
+    "conventional-changelog-conventionalcommits": ">=5.0.0"
   }
 }
