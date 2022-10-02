@@ -25,7 +25,7 @@ trim_trailing_whitespace = true
 [{Gemfile.lock,*.min.js}]
 charset = none
 end_of_line = none
-insert_final_newline = none
-trim_trailing_whitespace = none
+insert_final_newline = false
+trim_trailing_whitespace = false
 indent_style = none
 indent_size = none
