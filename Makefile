@@ -32,6 +32,7 @@ test:
 
 install: test clean
 	ln -s $(CURDIR)/project-dotfiles ~/bin/
+	git clean -fxi
 
 clean:
 	-rm ~/bin/project-dotfiles
