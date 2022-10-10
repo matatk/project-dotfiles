@@ -1,6 +1,4 @@
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+# Change log
 
 ## [1.1.0](https://github.com/matatk/project-dotfiles/compare/v1.0.0...v1.1.0) (2019-09-06)
 
